@@ -1,0 +1,5 @@
+waste/*
+*.exe
+main
+*.o
+*.lib
