@@ -4,3 +4,4 @@ main
 *.o
 *.lib
 sina_news/*
+test/*
