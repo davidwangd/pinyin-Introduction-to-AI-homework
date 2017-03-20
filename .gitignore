@@ -5,3 +5,4 @@ main
 *.lib
 sina_news/*
 test/*
+sina_news_gbk/*
