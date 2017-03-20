@@ -9,18 +9,9 @@
 
 namespace Possi{
 
-	enum PossiModelType{
-		e_pinyinPossi = 0,
-		e_characterPossi,
-		e_2pinyinPossi,
-		e_2characterPossi,
-		e_possiModelTypeCount,
-		e_testPossi
-	};
-
 	// a class hold the possibility of a certain things in certain field.
 	// static int Total is declared in each concrete class
-	template<PossiModelType type>
+	template<int type>
 	class PossiModel{
 	public:
 		PossiModel() = default;
@@ -37,6 +28,12 @@ namespace Possi{
 			Count--;
 			Total--;
 		}
+
+		void removeAll(){
+			Total -= Count;
+			Count = 0;
+		}
+
 		// return -log(P) = -log(Count / Total)
 		double getPossi() const {
 			return -log((double)Count / (double)Total);
@@ -57,7 +54,7 @@ namespace Possi{
 		static int Total;
 	};
 
-	template<PossiModelType type>
+	template<int type>
 	int PossiModel<type>::Total = 0;
 
 	// Tp is the struct solve filed data
@@ -65,7 +62,7 @@ namespace Possi{
 	// Which is Unique in Field.
 	// Singleton model is used
 
-	template <typename Tp, PossiModelType type>
+	template <typename Tp, int type>
 	class PossiField{
 		typedef PossiModel<type> Model;
 		typedef std::map<Tp, Model> Map;
@@ -93,6 +90,13 @@ namespace Possi{
 
 		// remove all element with possibility than threshold, -log(P) > -log(threshold);
 		void removeElementsLessThan(double threshold);
+
+		// remove all elemetns with a checker function
+		void removeAllIf(int (* func)(const Tp &data));
+
+		// remove all elements of certain type
+		void removeAll(const Tp &data);
+
 	private:
 		PossiField() = default;
 		~PossiField() = default;
@@ -100,10 +104,10 @@ namespace Possi{
 		static PossiField* _instance;
 	};
 
-	template <typename Tp, PossiModelType type>
+	template <typename Tp, int type>
 	PossiField<Tp, type>* PossiField<Tp, type>::_instance = nullptr;
 
-	template <typename Tp, PossiModelType type>
+	template <typename Tp, int type>
 	inline void PossiField<Tp, type>::Add(const Tp &data){
 		auto it = mp.find(data);
 		if (it == mp.end()){
@@ -120,7 +124,7 @@ namespace Possi{
 		it -> second.Add();
 	}
 
-	template <typename Tp, PossiModelType type>
+	template <typename Tp, int type>
 	inline void PossiField<Tp, type>::Remove(const Tp &data){
 		auto it = mp.find(data);
 		if (it == mp.end()){
@@ -137,7 +141,7 @@ namespace Possi{
 		it -> second.Remove();
 	}
 
-	template <typename Tp, PossiModelType type>
+	template <typename Tp, int type>
 	inline double PossiField<Tp, type>::getPossi(const Tp &data) const{
 		auto it = mp.find(data);
 		// not exists
@@ -145,7 +149,7 @@ namespace Possi{
 		return it -> second.getPossi();
 	}
 
-	template <typename Tp,PossiModelType type>
+	template <typename Tp,int type>
 	inline int PossiField<Tp, type>::getCount(const Tp &data) const{
 		auto it = mp.find(data);
 
@@ -153,7 +157,7 @@ namespace Possi{
 		return it -> second.getCount();
 	}
 
-	template <typename Tp, PossiModelType type>
+	template <typename Tp, int type>
 	inline int PossiField<Tp, type>::getTotal() const {
 		// no samples at all
 		if (mp.begin() == mp.end()) return 0;
@@ -162,16 +166,19 @@ namespace Possi{
 		return mp.begin() -> second.getTotal();
 	}
 
-	template <typename Tp, PossiModelType type>
+	template <typename Tp, int type>
 	inline void PossiField<Tp, type>::removeElementsLessThan(double threshold){
 		double mlog = -log(threshold);
 		for (auto it = mp.begin(); it != mp.end(); it++){
 			if (it -> second.getPossi() > mlog){
 				auto j = it;
 				it--;
+				j -> second.removeAll();
 				mp.erase(j);
 			}
 		}
 	}
-} // namespace Possi
+
+}
+// namespace Possi
 #endif //! POSSI_H
