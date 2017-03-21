@@ -11,7 +11,8 @@ enum Type{
 	e_Total = 2
 }
 
-class merge;
+extern class singleMerge;
+extern class relatedMerge;
 
 static const int MaxLength = 4;
 // save the data of length with type of char of py.
@@ -19,7 +20,10 @@ template <int length, Type type>
 class singleBlock{
 public:
 
-	friend class merge;
+	friend class singleMerge;
+
+	singleBlock() = default;
+	virtual ~singleBlock() = default;
 	// set the data of list
 	void set(int *list){
 		for (int i = 0;i < length;i++) block[i] = list[i];
@@ -52,51 +56,63 @@ private:
 template <int length, Type type>
 const int singleBlock<length, type>::possiModel = length * e_Total + type;
 
-template <int length, Type type>
-// inheritage set, opeartor< and operaotr==
-class relatedBlock : public singleBlock<length, type>{
+//certian length of PY relected to certain characters.
+template <int length>
+class relatedBlock{
+	friend class relatedMerge;
+public:
+	
+	relatedBlock() = default;
 
+	// Construct a related block according to single PY block and single Character block
+	relatedBlock(const singleBlock<length, e_Py> &A, const singleBlock<length, e_Char> &B){
+		for (int i = 0;i < length;i++){
+			block[i]   = A.block[i];
+			related[i] = B.block[i];
+		}
+	}	
 	friend class merge;
 	int getPossiModel() const {
 		return possiModel;
 	}
 
-	// insert a possible corresponding relation between this type and opposite one.
-	void insert(int *list){
-		for (int i = 0;i < related.size();i++){
-			int flag = 1;
-			for (int j = 0;j < length;j++){
-				if (list[j] != related[i][j]){
-					flag = 0;
-					break;
-				} 
-			}
-			if (flag) return;
-		}
-		int *curr = new int[length];
-		
-		for (int i = 0;i < length;i++)
-			curr[i] = list[i];
-
-		related.push_back(const_cast<const int *>curr);
-	}
 private:
 	static const int possiModel;
-	vector<const int[length]> related;
+	int block[length];
+	int related[length];
 };
 
-template <int length, Type type>
-const int relatedBlock<length, type>::possiModel = maxLenght * e_Total + length * e_Total + type;
+template <int length>
+const int relatedBlock<length>::possiModel = MaxLength * e_Total + length;
 
 // this class operates merge for these two kinds
-class merge{
+class singleMerge{
 	template<int l1, int l2, Type type>
 	singleBlock<l1 + l2, type> operator()(const singleBlock<l1, type> &A, const singleBlock<l2, type> &B){
-		// TODO
+		singleBlock<l1 + l2, type> ret;
+		for (int i = 0;i < l1;i++)
+			ret.block[i] = A.block[i];
+		for (int i = 0;i < l2;i++)
+			ret.block[i + l1] = B.block[i];
+		return ret;
 	}
+}
 
-	relatedBlock<l1 + l2, type> oeprator()(const relatedBlock<l1, type> &A, const relatedBlock<l2, type> &B){
-		// TODO
+class relatedMerge{
+	template<int l1, int l2>
+	relatedBlock<l1 + l2> oeprator()(const relatedBlock<l1> &A, const relatedBlock<l2> &B){
+		relatedBlock<l1 + l2, type> ret;
+		for (int i = 0;i < l1;i++){
+			ret.block[i] = A.block[i];
+			ret.related[i] = A.related[i];
+		}
+
+		for (int i = 0;i < l2;i++){
+			ret.block[i + l1] = B.block[i];
+			ret.related[i + l1] = B.related[i];
+		}
+		
+		return ret;
 	}
 };
 

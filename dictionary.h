@@ -30,7 +30,7 @@ namespace Dict{
 	// pinyin of corresponding characters'
 	vector<int> py2char[MaxPY];
 
-	void load(){
+	void loadDict(){
 		// dictionary file
 		FILE *dict = fopen("dict.txt", "r");
 
