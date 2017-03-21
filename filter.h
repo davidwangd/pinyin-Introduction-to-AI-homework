@@ -17,7 +17,7 @@ using namespace std;
 
 #define DECLARE_FUNC_NAME(RETURN_TYPE,FUNCNAME,CONST_FLAG)					\
 	template <int length, Type type>										\
-	RETURN_TYPE FUNCNAME(const singleBlock<length, type> &x) CONST_FLAG		\
+	RETURN_TYPE FUNCNAME(const singleBlock<length, type> &x) CONST_FLAG;	\
 	template <int length>													\
 	RETURN_TYPE FUNCNAME(const relatedBlock<length> &x) CONST_FLAG
 
@@ -65,7 +65,16 @@ public:
 	DECLARE_FUNC_NAME(void, Add, );
 	DECLARE_FUNC_NAME(void, Remove, );
 	DECLARE_FUNC_NAME(double, getPossi, const);
+	DECLARE_FUNC_NAME(void, removeAll, );
 
+	template<int length, Type type>
+	void removeAllIf(int (*func)(const singleBlock<length, type> &x));
+
+	template<int length>
+	void removeAllIf(int (*func)(const relatedBlock<length> &x)); 
+
+	template<int type>
+	void removeAllIf(int (*func)(const PossiModel<type> &x)); 
 
 private:
 	// possifield recorded pinyin of all length available

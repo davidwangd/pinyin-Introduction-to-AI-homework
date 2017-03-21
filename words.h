@@ -9,10 +9,10 @@ enum Type{
 	e_Char = 0,
 	e_Py = 1,
 	e_Total = 2
-}
+};
 
-extern class singleMerge;
-extern class relatedMerge;
+class singleMerge;
+class relatedMerge;
 
 static const int MaxLength = 4;
 // save the data of length with type of char of py.
@@ -46,11 +46,11 @@ public:
 	int getPossiModel() const {
 		return possiModel;
 	}
+	static const int possiModel;
 private:
 	// save the data
 	int block[length];
 
-	static const int possiModel;
 };
 
 template <int length, Type type>
@@ -75,9 +75,8 @@ public:
 	int getPossiModel() const {
 		return possiModel;
 	}
-
-private:
 	static const int possiModel;
+private:
 	int block[length];
 	int related[length];
 };
@@ -96,12 +95,12 @@ class singleMerge{
 			ret.block[i + l1] = B.block[i];
 		return ret;
 	}
-}
+};
 
 class relatedMerge{
 	template<int l1, int l2>
-	relatedBlock<l1 + l2> oeprator()(const relatedBlock<l1> &A, const relatedBlock<l2> &B){
-		relatedBlock<l1 + l2, type> ret;
+	relatedBlock<l1 + l2> operator()(const relatedBlock<l1> &A, const relatedBlock<l2> &B){
+		relatedBlock<l1 + l2> ret;
 		for (int i = 0;i < l1;i++){
 			ret.block[i] = A.block[i];
 			ret.related[i] = A.related[i];

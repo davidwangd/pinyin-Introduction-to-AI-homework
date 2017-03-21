@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <string>
 #include <cmath>
+#include <iostream>
 #include <map>
 
 namespace Possi{
@@ -14,8 +15,9 @@ namespace Possi{
 	template<int type>
 	class PossiModel{
 	public:
-		PossiModel() = default;
-		~PossiModel() = default;
+		PossiModel(){
+			Count = 0;
+		}
 
 		// Add this one to all this field
 		void Add(){
@@ -94,8 +96,20 @@ namespace Possi{
 		// remove all elemetns with a checker function
 		void removeAllIf(int (* func)(const Tp &data));
 
+		void removeAllIf(int (* func)(const PossiModel<type> &x));
+
 		// remove all elements of certain type
 		void removeAll(const Tp &data);
+
+		// for debugging usage;
+		void show(std::ostream &out){
+			for (auto x:mp){
+				out << x.first << ":" << x.second.getCount() << "/" << x.second.getTotal() << "  " << x.second.getPossi() << std::endl;
+			}
+			out << "==========================" << std::endl;
+			out << "Show Over " << std::endl;
+			out << "==========================" << std::endl;
+		}
 
 	private:
 		PossiField() = default;
@@ -120,8 +134,7 @@ namespace Possi{
 			}
 			res.first -> second.Add();
 			return;
-		}
-		it -> second.Add();
+		}else it -> second.Add();
 	}
 
 	template <typename Tp, int type>
@@ -179,6 +192,37 @@ namespace Possi{
 		}
 	}
 
+	template <typename Tp, int type>
+	inline void PossiField<Tp, type>::removeAll(const Tp &x){
+		auto it = mp.find(x);
+		if (it == mp.end()) return;
+		it -> second.removeAll();
+		mp.erase(it);
+	}
+
+	template <typename Tp, int type>
+	inline void PossiField<Tp, type>::removeAllIf(int (* func)(const Tp &x)){
+		for (auto it = mp.begin();it != mp.end(); it++){
+			if (func(it -> first)){
+				auto j = it;
+				j -> second.removeAll();
+				it--;
+				mp.erase(j);
+			}
+		}
+	}
+
+	template <typename Tp, int type>
+	inline void PossiField<Tp, type>::removeAllIf(int (* func)(const PossiModel<type> &x)){
+		for (auto it = mp.begin();it != mp.end(); it++){
+			if (func(it -> second)){
+				auto j = it;
+				j -> second.removeAll();
+				it--;
+				mp.erase(j);
+			}
+		}
+	}
 }
 // namespace Possi
 #endif //! POSSI_H
