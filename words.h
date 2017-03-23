@@ -43,11 +43,20 @@ public:
 		return 1;
 	}
 
+	int& operator[](const int &x) const {
+		return block[x];
+	}
+
+	singleBlock<length - 1, type> suffix() const{
+		singleBlock<length - 1, type> ret;
+		ret.set(block + 1);
+		return ret;
+	}
+
 	int getPossiModel() const {
 		return possiModel;
 	}
 	static const int possiModel;
-private:
 	// save the data
 	int block[length];
 
@@ -76,7 +85,7 @@ public:
 		return possiModel;
 	}
 	static const int possiModel;
-private:
+
 	int block[length];
 	int related[length];
 };
@@ -114,5 +123,15 @@ class relatedMerge{
 		return ret;
 	}
 };
+
+template <int l1, int l2, Type type>
+singleBlock<l1 + l2> operator+(const singleBlock<l1> &A, const singleBlock<l2> &B){
+	singleBlock<l1 + l2, type> ret;
+	for (int i = 0;i < l1;i++)
+		ret.block[i] = A.block[i];
+	for (int i = 0;i < l2;i++)
+		ret.block[i + l1] = B.block[i];
+	return ret;
+}
 
 #endif // ! WORDS_H
