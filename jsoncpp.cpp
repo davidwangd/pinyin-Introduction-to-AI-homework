@@ -74,7 +74,7 @@ license you like.
 
 
 #include "jsoncpp/json.h"
-
+#include <cmath>
 
 // //////////////////////////////////////////////////////////////////////
 // Beginning of content of file: src/lib_json/json_tool.h
@@ -3074,7 +3074,7 @@ std::string valueToString(double value) {
   len = sprintf_s(buffer, sizeof(buffer), "%.16g", value);
 #endif
 #else
-  if (isfinite(value)) {
+  if (std::isfinite(value)) {
     len = snprintf(buffer, sizeof(buffer), "%.16g", value);
   } else {
     // IEEE standard states that NaN values will not compare to themselves
