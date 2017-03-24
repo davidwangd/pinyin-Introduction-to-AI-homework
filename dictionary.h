@@ -1,3 +1,5 @@
+#ifndef DICT_H
+#define DICT_H
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -86,3 +88,4 @@ namespace Dict{
 	}
 }
 
+#endif // ! DICT_H

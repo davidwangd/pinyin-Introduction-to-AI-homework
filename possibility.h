@@ -94,7 +94,7 @@ namespace Possi{
 		void removeElementsLessThan(double threshold);
 
 		// remove all elemetns with a checker function
-		void removeAllIf(int (* func)(const Tp &data));
+		void removeAllElementsIf(int (* func)(const Tp &data));
 
 		void removeAllIf(int (* func)(const PossiModel<type> &x));
 
@@ -201,7 +201,7 @@ namespace Possi{
 	}
 
 	template <typename Tp, int type>
-	inline void PossiField<Tp, type>::removeAllIf(int (* func)(const Tp &x)){
+	inline void PossiField<Tp, type>::removeAllElementsIf(int (* func)(const Tp &x)){
 		for (auto it = mp.begin();it != mp.end(); it++){
 			if (func(it -> first)){
 				auto j = it;
