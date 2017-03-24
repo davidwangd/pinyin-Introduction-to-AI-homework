@@ -110,17 +110,21 @@ void parse(string data){
 	}
 }
 
+static int threshold;
+
 template <int type>
 int filterFunc(const PossiModel<type> &x){
-	int threshold;
-	if (type == singleBlock<1, e_Char>::possiModel || singleBlock<1, e_Py>::possiModel || relatedBlock<1>::possiModel) threshold = 2;
-	if (type == singleBlock<2, e_Char>::possiModel || singleBlock<2, e_Py>::possiModel || relatedBlock<2>::possiModel) threshold = 6;
-	if (type == singleBlock<3, e_Char>::possiModel || singleBlock<3, e_Py>::possiModel || relatedBlock<3>::possiModel) threshold = 4;
-	if (type == singleBlock<4, e_Char>::possiModel || singleBlock<4, e_Py>::possiModel || relatedBlock<4>::possiModel) threshold = 2;
+	if (type == singleBlock<1, e_Char>::possiModel || type == singleBlock<1, e_Py>::possiModel || type == relatedBlock<1>::possiModel) threshold = 1;
+	if (type == singleBlock<2, e_Char>::possiModel || type == singleBlock<2, e_Py>::possiModel || type == relatedBlock<2>::possiModel) threshold = 6;
+	if (type == singleBlock<3, e_Char>::possiModel || type == singleBlock<3, e_Py>::possiModel || type == relatedBlock<3>::possiModel) threshold = 6;
+	if (type == singleBlock<4, e_Char>::possiModel || type == singleBlock<4, e_Py>::possiModel || type == relatedBlock<4>::possiModel) threshold = 6;
+	threshold = 10;
 	return x.getCount() < threshold;
 }
 
-void filterless(){
+void filterless(int limit){
+	threshold = limit;
+
 	filter.removeAllIf(filterFunc<singleBlock<1, e_Py>::possiModel>);
 	filter.removeAllIf(filterFunc<singleBlock<2, e_Py>::possiModel>);
 	filter.removeAllIf(filterFunc<singleBlock<3, e_Py>::possiModel>);
@@ -140,19 +144,36 @@ void filterless(){
 void learn(const char *file){
 	ifstream fin(file);
 	string str, data;
-	int count;
-	for (int i = 1;i <= 50;i++){
-		getline(fin, str);
+	int count = 0;
+	
+	while (getline(fin, str)){
 		Json::Reader reader;
 		Json::Value input;
 
 		reader.parse(str, input);
 		data = input["html"].asString();
+		count++;
+		parse(data);
+		if (count % 10 == 0){
+			fprintf(stderr, "leant %d types!\n", count);
+		}
+		if (count % 1000 == 0){
+			int limit = 4 + 2 * count / 1000;
+			filterless(limit);
+			break;
+		}
+		if (count == 3000){
+			filterless(10);
+			break;
+		}
 	}
 }
 
 int main(){
+	freopen("log.txt", "w", stdout);
+	loadDict();
 	learn("sina_news_gbk/2016-01.txt");
+	filter.Char1 -> show(cout);
 	filter.Char2 -> show(cout);
 	filter.Char3 -> show(cout);
 	filter.Char4 -> show(cout);

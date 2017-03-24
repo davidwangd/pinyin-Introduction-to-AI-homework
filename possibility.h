@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iostream>
 #include <map>
+#include <set>
 
 namespace Possi{
 
@@ -68,6 +69,7 @@ namespace Possi{
 	class PossiField{
 		typedef PossiModel<type> Model;
 		typedef std::map<Tp, Model> Map;
+		typedef std::set<Tp> Set;
 	public:
 		static PossiField* Instance(){
 			if (_instance == nullptr){
@@ -115,6 +117,7 @@ namespace Possi{
 		PossiField() = default;
 		~PossiField() = default;
 		Map mp;
+		Set st;
 		static PossiField* _instance;
 	};
 
@@ -123,10 +126,9 @@ namespace Possi{
 
 	template <typename Tp, int type>
 	inline void PossiField<Tp, type>::Add(const Tp &data){
-		auto it = mp.find(data);
-		if (it == mp.end()){
+		if (st.count(data) == 0){
 			auto res = mp.insert(std::make_pair(data, Model()));
-
+			st.insert(data);
 			// unsuccessfully add
 			if (!res.second){
 				fprintf(stderr, "%s\n", "PossiField::ADDERROR");
@@ -134,7 +136,7 @@ namespace Possi{
 			}
 			res.first -> second.Add();
 			return;
-		}else it -> second.Add();
+		}else mp[data].Add();
 	}
 
 	template <typename Tp, int type>
@@ -202,25 +204,37 @@ namespace Possi{
 
 	template <typename Tp, int type>
 	inline void PossiField<Tp, type>::removeAllElementsIf(int (* func)(const Tp &x)){
-		for (auto it = mp.begin();it != mp.end(); it++){
+		for (auto it = mp.begin();it != mp.end();){
 			if (func(it -> first)){
 				auto j = it;
 				j -> second.removeAll();
-				it--;
-				mp.erase(j);
-			}
+				if (it == mp.begin()){
+					mp.erase(j);
+					it = mp.begin();
+				}else{
+					it--;
+					mp.erase(j);
+					it++;
+				}
+			}else it++;
 		}
 	}
 
 	template <typename Tp, int type>
 	inline void PossiField<Tp, type>::removeAllIf(int (* func)(const PossiModel<type> &x)){
-		for (auto it = mp.begin();it != mp.end(); it++){
+		for (auto it = mp.begin();it != mp.end(); ){
 			if (func(it -> second)){
 				auto j = it;
 				j -> second.removeAll();
-				it--;
-				mp.erase(j);
-			}
+				if (it == mp.begin()){
+					mp.erase(j);
+					it = mp.begin();
+				}else{
+					it--;
+					mp.erase(j);
+					it++;
+				}
+			}else it++;
 		}
 	}
 }

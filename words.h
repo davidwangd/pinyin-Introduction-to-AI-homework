@@ -24,15 +24,15 @@ template <int length, Type type>
 class singleBlock{
 public:
 
-	friend class singleMerge;
-
 	singleBlock() = default;
+	
 	template <int l, Type t>
 	singleBlock(const singleBlock<l, t> &x){}
 
 	int operator<(const singleBlock<length, type> &x) const{
 		for (int i = 0;i < length;i++)
 			if (block[i] != x.block[i]) return block[i] < x.block[i];
+		return 0;
 	}
 
 	template <int l>
