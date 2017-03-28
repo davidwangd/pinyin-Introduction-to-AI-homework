@@ -108,6 +108,7 @@ public:
 	PossiField<relatedBlock<3>, relatedBlock<3>::possiModel>* Re3;
 	PossiField<relatedBlock<4>, relatedBlock<4>::possiModel>* Re4;
 
+	void clear();
 private:
 	void * getPointer(int length, Type type) const{
 		if (type == e_Char){

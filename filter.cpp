@@ -22,3 +22,32 @@ Filter::Filter(){
 	Re3 = PossiField<relatedBlock<3>, relatedBlock<3>::possiModel>::Instance();
 	Re4 = PossiField<relatedBlock<4>, relatedBlock<4>::possiModel>::Instance();
 }
+void Filter::clear(){
+	const double Ratio = 0.5f;
+	
+	for (auto x : Char3 -> mp){
+		singleBlock<3, e_Char> curr = x.first;
+		int currCount = getCount(curr);
+		singleBlock<2, e_Char> now = curr.suffix();
+		if (getCount(now) - currCount < currCount * Ratio){
+			Char2 -> removeAll(now);
+		}
+		now = curr.prefix();
+		if (getCount(now) - currCount < currCount * Ratio){
+			Char2 -> removeAll(now);
+		}
+	}
+
+	for (auto x : Char4 -> mp){
+		singleBlock<4, e_Char> curr = x.first;
+		int currCount = getCount(curr);
+		singleBlock<3, e_Char> now = curr.suffix();
+		if (getCount(now) - currCount < currCount * Ratio){
+			Char3 -> removeAll(now);
+		}
+		now = curr.prefix();
+		if (getCount(now) - currCount < currCount * Ratio){
+			Char3 -> removeAll(now);
+		}
+	}
+}

@@ -59,8 +59,8 @@ namespace Dict{
 		fscanf(dict, "%s", buffer);
 		string py = string(buffer);
 		for (int i = 0;i < 406;i++){
-			int2py[countPy] = py;
-			py2int[py] = countPy;
+			int2py[i] = py;
+			py2int[py] = i;
 
 			char c = 0;
 			c = fgetc(dict);
@@ -77,11 +77,10 @@ namespace Dict{
 				fprintf(LOG, "%s\n", C.c_str());
 				if (char2int.find(C) != char2int.end()){
 					int id = char2int[C];
-					py2char[countPy].push_back(id);
-					char2py[id].push_back(countPy);
+					py2char[i].push_back(id);
+					char2py[id].push_back(i);
 				}
 			}
-
 			countPy++;
 		}
 		printf("load complete!\n");

@@ -52,6 +52,13 @@ namespace Possi{
 			return Total;
 		}
 
+		void setCount(int x) {
+			Count = x;
+		}
+
+		void setTotal(int x) {
+			Total = x;
+		} 
 	private:
 		int Count;
 		static int Total;
@@ -95,6 +102,9 @@ namespace Possi{
 		// remove all element with possibility than threshold, -log(P) > -log(threshold);
 		void removeElementsLessThan(double threshold);
 
+		// add the model to Type x
+		void addCount(const Tp &x, const Model &model);
+
 		// remove all elemetns with a checker function
 		void removeAllElementsIf(int (* func)(const Tp &data));
 
@@ -112,11 +122,11 @@ namespace Possi{
 			out << "Show Over " << std::endl;
 			out << "==========================" << std::endl;
 		}
-
+		Map mp;
 	private:
 		PossiField() = default;
 		~PossiField() = default;
-		Map mp;
+		
 		Set st;
 		static PossiField* _instance;
 	};
@@ -236,6 +246,14 @@ namespace Possi{
 				}
 			}else it++;
 		}
+	}
+
+	template <typename Tp, int type>
+	inline void PossiField<Tp, type>::addCount(const Tp &x, const Model &model){
+		if (mp.find(x) == mp.end())
+			mp.insert(std::make_pair(x, model));
+		else
+			mp[x].setCount(mp[x].getCount() + model.getCount());
 	}
 }
 // namespace Possi
