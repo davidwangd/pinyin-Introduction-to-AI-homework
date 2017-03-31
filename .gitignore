@@ -8,6 +8,6 @@ test/*
 sina_news_gbk/*
 learn
 main
-log.txt
-info.txt
+*.txt
+pinyin
 
