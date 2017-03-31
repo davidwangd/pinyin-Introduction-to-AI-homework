@@ -47,34 +47,8 @@ void parse(string data){
 		}
 		if (maxSize <= 1) state[maxSize++] = pos->second;
 		else state[0] = state[1], state[1] = pos->second;
+		push();
 	}
-}
-
-static int threshold;
-
-template <int type>
-int filterFunc(const PossiModel<type> &x){
-/*
-	if (type == singleBlock<1, e_Char>::possiModel || type == singleBlock<1, e_Py>::possiModel || type == relatedBlock<1>::possiModel) threshold = 1;
-	if (type == singleBlock<2, e_Char>::possiModel || type == singleBlock<2, e_Py>::possiModel || type == relatedBlock<2>::possiModel) threshold = 6;
-	if (type == singleBlock<3, e_Char>::possiModel || type == singleBlock<3, e_Py>::possiModel || type == relatedBlock<3>::possiModel) threshold = 6;
-	if (type == singleBlock<4, e_Char>::possiModel || type == singleBlock<4, e_Py>::possiModel || type == relatedBlock<4>::possiModel) threshold = 6;
-*/
-	return x.getCount() < threshold;
-}
-
-void filterless(int limit){
-	threshold = limit;
-
-//	filter.removeAllIf(filterFunc<singleBlock<1, e_Py>::possiModel>);
-//	filter.removeAllIf(filterFunc<singleBlock<2, e_Py>::possiModel>);
-//	filter.removeAllIf(filterFunc<singleBlock<3, e_Py>::possiModel>);
-//	filter.removeAllIf(filterFunc<singleBlock<4, e_Py>::possiModel>);
-
-//	filter.removeAllIf(filterFunc<relatedBlock<1>::possiModel>);
-//	filter.removeAllIf(filterFunc<relatedBlock<2>::possiModel>);
-//	filter.removeAllIf(filterFunc<relatedBlock<3>::possiModel>);
-//	filter.removeAllIf(filterFunc<relatedBlock<4>::possiModel>);
 }
 
 void learn(const char *file){
@@ -88,14 +62,18 @@ void learn(const char *file){
 
 		reader.parse(str, input);
 		data = input["html"].asString();
+//		cerr << data << endl;
 		count++;
+		if (count % 100 == 0){
+			printf("learned %d objects\n", count);
+		}
 		parse(data);
-		if (count >= 10000) break;
 	}
 }
 
 int main(){
-	freopen("log.txt", "w", stdout);
+//	freopen("log.txt", "w", stdout);
+	freopen("obj.txt", "w", stderr);
 	loadDict();
 	learn("sina_news_gbk/2016-01.txt");
 	learn("sina_news_gbk/2016-02.txt");
@@ -108,6 +86,6 @@ int main(){
 	learn("sina_news_gbk/2016-09.txt");
 	learn("sina_news_gbk/2016-10.txt");
 	learn("sina_news_gbk/2016-11.txt");
-	filter.Char1 -> show(cout);
-	filter.Char2 -> show(cout);
+	filter.Char1 -> show(cerr);
+	filter.Char2 -> show(cerr);
 }

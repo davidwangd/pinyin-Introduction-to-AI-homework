@@ -141,7 +141,7 @@ namespace Possi{
 			st.insert(data);
 			// unsuccessfully add
 			if (!res.second){
-				fprintf(stderr, "%s\n", "PossiField::ADDERROR");
+				//fprintf(stderr, "%s\n", "PossiField::ADDERROR");
 				throw std::string("PossiField::ADDERROR");
 			}
 			res.first -> second.Add();
@@ -157,7 +157,7 @@ namespace Possi{
 
 			// unsuccessfully add
 			if (!res.second){
-				fprintf(stderr, "%s\n", "PossiField::ADDERROR");
+				//fprintf(stderr, "%s\n", "PossiField::ADDERROR");
 				throw std::string("PossiField::ADDERROR");
 			}
 			res.first -> second.Remove();
@@ -170,7 +170,7 @@ namespace Possi{
 	inline double PossiField<Tp, type>::getPossi(const Tp &data) const{
 		auto it = mp.find(data);
 		// not exists
-		if (it == mp.end()) return 0.0f;
+		if (it == mp.end()) return 1e100;
 		return it -> second.getPossi();
 	}
 

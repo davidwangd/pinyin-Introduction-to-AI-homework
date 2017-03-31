@@ -53,7 +53,7 @@ namespace Dict{
 			buffer[i + 2] = tmp;
 		}
 
-		printf("load complete!\n");
+//		//printf("load complete!\n");
 		//load from dict 
 
 		fscanf(dict, "%s", buffer);
@@ -65,7 +65,7 @@ namespace Dict{
 			char c = 0;
 			c = fgetc(dict);
 			// process characters
-			fprintf(LOG, "%s:\n", py.c_str());
+			// fprintf(LOG, "%s:\n", py.c_str());
 			while (c == ' '){
 				if (fscanf(dict, "%s", buffer) == EOF) break;
 				if (buffer[0] > 0){
@@ -74,7 +74,7 @@ namespace Dict{
 				}
 				string C = string(buffer);
 				// in sample
-				fprintf(LOG, "%s\n", C.c_str());
+				// fprintf(LOG, "%s\n", C.c_str());
 				if (char2int.find(C) != char2int.end()){
 					int id = char2int[C];
 					py2char[i].push_back(id);
@@ -83,7 +83,7 @@ namespace Dict{
 			}
 			countPy++;
 		}
-		printf("load complete!\n");
+//		//printf("load complete!\n");
 	}
 }
 
