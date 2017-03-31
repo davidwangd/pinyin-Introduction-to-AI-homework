@@ -16,70 +16,15 @@ using namespace Possi;
 
 singleBlock<1, e_Char> ch1;
 singleBlock<2, e_Char> ch2;
-singleBlock<3, e_Char> ch3;
-singleBlock<4, e_Char> ch4;
 
-int state[5];
-int state2[5];
+int state[4];
 
-singleBlock<1, e_Py> py1;
-singleBlock<2, e_Py> py2;
-singleBlock<3, e_Py> py3;
-singleBlock<4, e_Py> py4;
-
-relatedBlock<1> re1;
-relatedBlock<2> re2;
-relatedBlock<3> re3;
-relatedBlock<4> re4;
-	
 Filter filter;
 
 int maxSize = 0;
 int cur = 0;
 
-void dfs(int x){
-	auto &pyList = char2py[state[x]];
-	for (vector<int>::iterator it = pyList.begin();it != pyList.end();it++){
-		state2[x] = *it;
-		if (x == maxSize - 1){ 
-			py1.set(state2 + maxSize - 1); 
-			filter.Add(py1);
-			re1 = relatedBlock<1>(py1, ch1);
-			filter.Add(re1);
-			if (x) dfs(x - 1); 
-		}
-		
-		if (x == maxSize - 2){
-			py2.set(state2 + maxSize - 2); 
-			filter.Add(py2);
-			re2 = relatedBlock<2>(py2, ch2);
-			filter.Add(re2); 
-			if (x) dfs(x - 1);
-		}
-		
-		if (x == maxSize - 3){
-			py3.set(state2 + maxSize - 3); 
-			filter.Add(py3);
-			re3 = relatedBlock<3>(py3, ch3);
-			filter.Add(re3); 
-			if (x) dfs(x - 1);
-		}
-
-		if (x == maxSize - 4){
-			py3.set(state2 + maxSize - 3); 
-			filter.Add(py3);
-			re3 = relatedBlock<3>(py3, ch3);
-			filter.Add(re3); 
-			if (x) dfs(x - 1);
-		}
-
-
-	}
-}
-
 void push(){
-	if (maxSize >= 4){ ch4.set(state); filter.Add(ch4); }
-	if (maxSize >= 3){ ch3.set(state + maxSize - 3); filter.Add(ch3); }
 	if (maxSize >= 2){ ch2.set(state + maxSize - 2); filter.Add(ch2); }
  	if (maxSize >= 1){ ch1.set(state + maxSize - 1); filter.Add(ch1); }
 //	cur = 0;
@@ -100,13 +45,8 @@ void parse(string data){
 			maxSize = 0;
 			continue;
 		}
-		if (maxSize == 4){
-			for (int i = 0;i <= 2;i++) state[i] = state[i + 1];
-		}else{
-			maxSize++;
-		}
-		state[maxSize - 1] = pos -> second;
-		push();
+		if (maxSize <= 1) state[maxSize++] = pos->second;
+		else state[0] = state[1], state[1] = pos->second;
 	}
 }
 
@@ -131,11 +71,6 @@ void filterless(int limit){
 //	filter.removeAllIf(filterFunc<singleBlock<3, e_Py>::possiModel>);
 //	filter.removeAllIf(filterFunc<singleBlock<4, e_Py>::possiModel>);
 
-	filter.removeAllIf(filterFunc<singleBlock<1, e_Char>::possiModel>);
-	filter.removeAllIf(filterFunc<singleBlock<2, e_Char>::possiModel>);
-	filter.removeAllIf(filterFunc<singleBlock<3, e_Char>::possiModel>);
-	filter.removeAllIf(filterFunc<singleBlock<4, e_Char>::possiModel>);
-
 //	filter.removeAllIf(filterFunc<relatedBlock<1>::possiModel>);
 //	filter.removeAllIf(filterFunc<relatedBlock<2>::possiModel>);
 //	filter.removeAllIf(filterFunc<relatedBlock<3>::possiModel>);
@@ -155,21 +90,8 @@ void learn(const char *file){
 		data = input["html"].asString();
 		count++;
 		parse(data);
-		if (count % 100 == 0){
-			fprintf(stderr, "leant %d types!\n", count);
-		}
-		if (count % 1000 == 0){
-			int limit = 3 + 3 * count / 1000;
-			filterless(limit);
-		}
-		if (count % 10000 == 0){
-			filter.clear();
-		}
-		if (count > 300000) break;
+		if (count >= 10000) break;
 	}
-	int limit = 3 + 3 * count / 1000;
-	filterless(limit);
-	filter.clear();
 }
 
 int main(){
@@ -188,6 +110,4 @@ int main(){
 	learn("sina_news_gbk/2016-11.txt");
 	filter.Char1 -> show(cout);
 	filter.Char2 -> show(cout);
-	filter.Char3 -> show(cout);
-	filter.Char4 -> show(cout);
 }
